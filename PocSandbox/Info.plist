@@ -25,16 +25,18 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.000000000000-placeholder</string>
+				<string>com.googleusercontent.apps.287483350257-1lts13opa8l3i6nkcb95i0hiku2377i6</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>GIDClientID</key>
-	<string>000000000000-placeholder.apps.googleusercontent.com</string>
+	<string>287483350257-1lts13opa8l3i6nkcb95i0hiku2377i6.apps.googleusercontent.com</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sua localização é usada para encontrar mercados próximos a você.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -31,11 +31,12 @@ targets:
           UIApplicationSupportsMultipleScenes: false
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
-        GIDClientID: 000000000000-placeholder.apps.googleusercontent.com
+        GIDClientID: 287483350257-1lts13opa8l3i6nkcb95i0hiku2377i6.apps.googleusercontent.com
+        NSLocationWhenInUseUsageDescription: Sua localização é usada para encontrar mercados próximos a você.
         CFBundleURLTypes:
           - CFBundleTypeRole: Editor
             CFBundleURLSchemes:
-              - com.googleusercontent.apps.000000000000-placeholder
+              - com.googleusercontent.apps.287483350257-1lts13opa8l3i6nkcb95i0hiku2377i6
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.example.PocSandbox

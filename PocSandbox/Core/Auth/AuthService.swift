@@ -3,7 +3,7 @@ import GoogleSignIn
 import UIKit
 
 @MainActor
-final class AuthViewModel: ObservableObject {
+final class AuthService: ObservableObject {
     @Published private(set) var user: GIDGoogleUser?
     @Published private(set) var isRestoringSession = true
     @Published private(set) var isSigningIn = false

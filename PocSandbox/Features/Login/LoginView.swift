@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject private var auth: AuthViewModel
+    @ObservedObject var viewModel: LoginViewModel
 
     var body: some View {
         ZStack {
             LinearGradient(
-                colors: [Color(.systemBackground), Color.blue.opacity(0.14)],
+                colors: [Color(uiColor: .systemBackground), Theme.brand.opacity(0.14)],
                 startPoint: .top,
                 endPoint: .bottom
             )
@@ -44,24 +44,24 @@ struct LoginView: View {
 
                 VStack(spacing: 16) {
                     Button {
-                        Task { await auth.signIn() }
+                        Task { await viewModel.signIn() }
                     } label: {
                         HStack(spacing: 12) {
-                            if auth.isSigningIn {
+                            if viewModel.isSigningIn {
                                 ProgressView()
-                                    .tint(.black)
+                                    .tint(.primary)
                             } else {
                                 GoogleLogo()
                             }
 
-                            Text(auth.isSigningIn ? "Entrando…" : "Continuar com Google")
+                            Text(viewModel.isSigningIn ? "Entrando…" : "Continuar com Google")
                                 .font(.headline)
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.primary)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 15)
                         .background(
-                            Color(.systemBackground),
+                            Color(uiColor: .secondarySystemBackground),
                             in: RoundedRectangle(cornerRadius: 14, style: .continuous)
                         )
                         .overlay {
@@ -69,7 +69,7 @@ struct LoginView: View {
                                 .stroke(Color.primary.opacity(0.12), lineWidth: 1)
                         }
                     }
-                    .disabled(auth.isSigningIn)
+                    .disabled(viewModel.isSigningIn)
                     .accessibilityLabel("Continuar com Google")
 
                     Text("Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.")
@@ -84,13 +84,13 @@ struct LoginView: View {
         .alert(
             "Não foi possível entrar",
             isPresented: Binding(
-                get: { auth.errorMessage != nil },
-                set: { if !$0 { auth.errorMessage = nil } }
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.clearError() } }
             )
         ) {
-            Button("OK", role: .cancel) { auth.errorMessage = nil }
+            Button("OK", role: .cancel) { viewModel.clearError() }
         } message: {
-            Text(auth.errorMessage ?? "")
+            Text(viewModel.errorMessage ?? "")
         }
     }
 }
@@ -111,6 +111,5 @@ private struct GoogleLogo: View {
 }
 
 #Preview {
-    LoginView()
-        .environmentObject(AuthViewModel())
+    LoginFlowView(authService: AuthService())
 }

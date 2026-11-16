@@ -5,7 +5,7 @@ import SwiftUI
 struct PocSandboxApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRootView()
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
