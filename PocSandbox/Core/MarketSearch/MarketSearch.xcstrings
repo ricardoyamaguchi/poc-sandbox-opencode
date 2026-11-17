@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "marketSearch.query" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "supermercado"
+          }
+        }
+      }
+    },
+    "marketSearch.unnamed" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mercado sem nome"
+          }
+        }
+      }
+    },
+    "marketSearch.error.failed" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível buscar mercados próximos. Verifique sua conexão e tente novamente."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

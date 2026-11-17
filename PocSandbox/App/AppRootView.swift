@@ -7,7 +7,7 @@ struct AppRootView: View {
         Group {
             switch coordinator.route {
             case .loading:
-                ProgressView("Verificando sessão…")
+                ProgressView(AppStrings.restoringSession.localized)
             case .login:
                 LoginFlowView(authService: coordinator.authService)
             case .home:

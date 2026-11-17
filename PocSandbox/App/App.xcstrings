@@ -1,0 +1,16 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "app.restoringSession" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificando sessão…"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

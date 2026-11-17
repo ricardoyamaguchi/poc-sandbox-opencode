@@ -5,14 +5,14 @@ enum MarketSearchError: LocalizedError {
     case failed
 
     var errorDescription: String? {
-        "Não foi possível buscar mercados próximos. Verifique sua conexão e tente novamente."
+        MarketSearch.errorFailed.text
     }
 }
 
 struct MapKitMarketService {
     func nearbyMarkets(around location: CLLocation, radius: CLLocationDistance = 5_000) async throws -> [Market] {
         let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = "supermercado"
+        request.naturalLanguageQuery = MarketSearch.query.text
         request.region = MKCoordinateRegion(
             center: location.coordinate,
             latitudinalMeters: radius * 2,
@@ -53,7 +53,7 @@ struct MapKitMarketService {
             address = placemark.title ?? ""
         }
 
-        let name = item.name ?? "Mercado sem nome"
+        let name = item.name ?? MarketSearch.unnamed.text
         let id = "\(coordinate.latitude),\(coordinate.longitude),\(name)"
 
         return Market(

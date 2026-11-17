@@ -32,11 +32,11 @@ struct LoginView: View {
                         )
                         .shadow(color: .orange.opacity(0.35), radius: 18, y: 10)
 
-                    Text("Bem-vindo ao PocSandbox")
+                    Text(Login.welcomeTitle.localized)
                         .font(.largeTitle.bold())
                         .multilineTextAlignment(.center)
 
-                    Text("Entre com sua conta Google para começar a usar o app.")
+                    Text(Login.welcomeSubtitle.localized)
                         .font(.body)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -56,7 +56,7 @@ struct LoginView: View {
                                 GoogleLogo()
                             }
 
-                            Text(viewModel.isSigningIn ? "Entrando…" : "Continuar com Google")
+                            Text(viewModel.isSigningIn ? Login.buttonSigningIn.localized : Login.buttonSignIn.localized)
                                 .font(.headline)
                                 .foregroundStyle(.primary)
                         }
@@ -72,9 +72,9 @@ struct LoginView: View {
                         }
                     }
                     .disabled(viewModel.isSigningIn)
-                    .accessibilityLabel("Continuar com Google")
+                    .accessibilityLabel(Text(Login.buttonSignIn.localized))
 
-                    Text("Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade.")
+                    Text(Login.terms.localized)
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -84,13 +84,13 @@ struct LoginView: View {
             .padding(.vertical, 32)
         }
         .alert(
-            "Não foi possível entrar",
+            Text(Login.errorTitle.localized),
             isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.clearError() } }
             )
         ) {
-            Button("OK", role: .cancel) { viewModel.clearError() }
+            Button(Login.ok.localized, role: .cancel) { viewModel.clearError() }
         } message: {
             Text(viewModel.errorMessage ?? "")
         }

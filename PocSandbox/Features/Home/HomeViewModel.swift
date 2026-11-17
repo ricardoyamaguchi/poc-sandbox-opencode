@@ -100,24 +100,10 @@ final class HomeViewModel: ObservableObject {
         guard let distance = market.distance(from: location) else { return nil }
 
         if distance < 1000 {
-            return "\(Int(distance.rounded())) m"
+            return Distance.meters.localized(with: Int(distance.rounded()))
         }
 
-        return String(format: "%.1f km", locale: Locale.current, distance / 1000)
-    }
-
-    func dateText(_ date: Date) -> String {
-        date.formatted(
-            Date.FormatStyle(date: .numeric, time: .omitted)
-                .locale(Locale(identifier: "pt_BR"))
-        )
-    }
-
-    func currencyText(_ value: Double) -> String {
-        value.formatted(
-            .currency(code: "BRL")
-                .locale(Locale(identifier: "pt_BR"))
-        )
+        return Distance.kilometers.localized(with: distance / 1000)
     }
 
     private func bind() {

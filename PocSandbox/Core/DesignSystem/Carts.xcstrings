@@ -1,0 +1,96 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "carts.status" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "em andamento"
+          }
+        }
+      }
+    },
+    "carts.row.subtitle" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ • %@"
+          }
+        }
+      }
+    },
+    "carts.seeMore" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver mais"
+          }
+        }
+      }
+    },
+    "carts.seeMore.accessibilityHint" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exibe todos os carrinhos em aberto"
+          }
+        }
+      }
+    },
+    "carts.close" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fechar"
+          }
+        }
+      }
+    },
+    "carts.close.accessibilityLabel" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fechar lista de carrinhos"
+          }
+        }
+      }
+    },
+    "carts.empty.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum carrinho em aberto."
+          }
+        }
+      }
+    },
+    "carts.empty.message" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toque em um mercado para começar."
+          }
+        }
+      }
+    },
+    "carts.delete.accessibilityLabel" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excluir carrinho de %@"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

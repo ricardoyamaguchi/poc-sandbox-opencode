@@ -1,0 +1,76 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "login.welcome.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bem-vindo ao PocSandbox"
+          }
+        }
+      }
+    },
+    "login.welcome.subtitle" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre com sua conta Google para começar a usar o app."
+          }
+        }
+      }
+    },
+    "login.button.signIn" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar com Google"
+          }
+        }
+      }
+    },
+    "login.button.signingIn" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entrando…"
+          }
+        }
+      }
+    },
+    "login.terms" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ao continuar, você concorda com os Termos de Uso e a Política de Privacidade."
+          }
+        }
+      }
+    },
+    "login.error.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível entrar"
+          }
+        }
+      }
+    },
+    "login.ok" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

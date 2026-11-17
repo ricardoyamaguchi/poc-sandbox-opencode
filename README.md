@@ -13,6 +13,7 @@ Aplicativo iOS em SwiftUI para registrar compras feitas em mercados físicos, co
 - [Busca de mercados com MapKit](#busca-de-mercados-com-mapkit)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Arquitetura](#arquitetura)
+- [Strings e localização](#strings-e-localização)
 - [Solução de problemas](#solução-de-problemas)
 - [Contribuição](#contribuição)
 - [Dependências](#dependências)
@@ -23,7 +24,7 @@ O PocSandbox permite iniciar e acompanhar compras em mercados físicos:
 
 1. O app inicia verificando se há uma sessão salva.
 2. Sem sessão, exibe a tela de login com o botão **Continuar com Google**.
-3. Após a autenticação, a tela inicial mostra, no topo, os carrinhos em aberto (até 2 visíveis, sem rolagem, com exclusão por ícone de lixeira e chip **Ver mais** centralizado que expande o próprio bloco com animação até a borda inferior da tela, sobrepondo o conteúdo abaixo, com rolagem e botão **Fechar** fixo no rodapé), pergunta **Onde você está comprando?** e lista os **Mercados perto de você**, com um campo para filtrar pelo nome parcial do mercado.
+3. Após a autenticação, a tela inicial mostra, no topo, os carrinhos em aberto (com altura adaptada ao conteúdo no modo retraído, limitando o conteúdo a 1 elemento e meio com gradiente fade no segundo elemento quando há mais de 1 carrinho, expansão ao tocar no preview para sobrepor o conteúdo abaixo com rolagem e botão **Fechar** fixo no rodapé sem efeito de fade no modo expandido, e exclusão por ícone de lixeira), pergunta **Onde você está comprando?** e lista os **Mercados perto de você**, com um campo para filtrar pelo nome parcial do mercado.
 4. A lista de mercados é obtida pela localização do aparelho usando o **MapKit** (`MKLocalSearch`).
 5. Ao tocar em um mercado, um carrinho é aberto e passa a aparecer no topo da tela. Os carrinhos ficam salvos localmente entre execuções.
 
@@ -37,7 +38,7 @@ O projeto serve como base para experimentos (`sandbox`) e não possui testes, CI
 - Permissão de localização solicitada ao abrir a home; mensagem e atalho para Ajustes quando negada.
 - Busca de mercados por geolocalização com o **MapKit** (`MKLocalSearch`), sem chave de API.
 - Campo de busca que filtra os mercados próximos pelo nome parcial, ignorando maiúsculas e acentos.
-- Carrinhos abertos com total e status, persistidos em `UserDefaults` (`CartStore`), exibindo até 2 na home com rolagem desabilitada; quando há mais, o chip **Ver mais** (centralizado) expande o próprio bloco até a borda inferior sobrepondo o conteúdo abaixo com animação, rolagem habilitada e botão **Fechar** centralizado no rodapé, retornando ao formato original. Cada carrinho pode ser excluído pelo ícone de lixeira.
+- Carrinhos abertos com total e status, persistidos em `UserDefaults` (`CartStore`), exibindo na home com altura adaptável no modo retraído que limita o conteúdo a 1 elemento mais metade do segundo elemento quando há mais de 1 carrinho, aplicando efeito gradiente com fade (transparência) em direção ao bottom do segundo elemento e permitindo expansão com animação até a borda inferior sobrepondo o conteúdo abaixo com rolagem e botão **Fechar** centralizado no rodapé (sem fade no rodapé expandido). Cada carrinho pode ser excluído pelo ícone de lixeira.
 - Tema nativo adaptável ao modo claro/escuro do device, usando cores semânticas do sistema e `Color.accentColor` (asset `AccentColor`).
 - Home com tipografia nativa do iOS (text styles/Dynamic Type), header verde, cards arredondados, lista de carrinhos delimitada por borda fina e suave afastada 8pt do conteúdo, e card cinza para o aviso de localização.
 - Logout pelo menu de conta no ícone de carrinho do header.
@@ -194,23 +195,39 @@ A descrição de uso fica em `NSLocationWhenInUseUsageDescription`, definida em 
 │   │   │   └── AuthService.swift    # Sessão e fluxo de autenticação Google
 │   │   ├── DesignSystem/
 │   │   │   ├── Theme.swift          # Cores semânticas nativas (claro/escuro)
-│   │   │   └── CardStyle.swift      # Modificadores de card do layout
+│   │   │   ├── CardStyle.swift      # Modificadores de card do layout
+│   │   │   ├── ExpandableListView.swift # Lista expansível reutilizável (suporta conteúdo genérico ou CartListItem)
+│   │   │   ├── CartsStrings.swift   # Chaves e strings de carrinhos e ações de lista
+│   │   │   └── Carts.xcstrings      # Catálogo de strings da lista de carrinhos
 │   │   ├── Location/
-│   │   │   └── LocationProvider.swift # Permissão e localização (CoreLocation)
+│   │   │   ├── LocationProvider.swift # Permissão e localização (CoreLocation)
+│   │   │   ├── LocationStrings.swift  # Chaves de strings de localização
+│   │   │   └── Location.xcstrings     # Catálogo de strings de localização
+│   │   ├── Localization/
+│   │   │   ├── LocalizableStrings.swift # Protocolo base para strings localizadas com LocalizedStringResource
+│   │   │   ├── DistanceStrings.swift    # Chaves de strings de distância
+│   │   │   └── Distance.xcstrings       # Catálogo de strings de distância
 │   │   ├── Models/
 │   │   │   ├── Cart.swift           # Modelo de carrinho e persistência local
+│   │   │   ├── CartListItem.swift   # Protocolo dos itens exibidos na lista de carrinhos
 │   │   │   └── Market.swift         # Modelo de mercado
 │   │   └── MarketSearch/
-│   │       └── MapKitMarketService.swift # Busca de mercados com MKLocalSearch
+│   │       ├── MapKitMarketService.swift   # Busca de mercados com MKLocalSearch
+│   │       ├── MarketSearchStrings.swift # Chaves de strings de busca
+│   │       └── MarketSearch.xcstrings    # Catálogo de strings de busca
 │   ├── Features/
 │   │   ├── Login/
 │   │   │   ├── LoginView.swift      # Tela de login com Google
 │   │   │   ├── LoginViewModel.swift # Estado e ações do login
-│   │   │   └── LoginCoordinator.swift # Fluxo de login
+│   │   │   ├── LoginCoordinator.swift # Fluxo de login
+│   │   │   ├── LoginStrings.swift   # Chaves de strings de login
+│   │   │   └── Login.xcstrings      # Catálogo de strings de login
 │   │   └── Home/
 │   │       ├── HomeView.swift       # Carrinhos, pergunta e mercados próximos
 │   │       ├── HomeViewModel.swift  # Estado, localização, mercados e carrinhos
-│   │       └── HomeCoordinator.swift # Fluxo da home e abertura dos Ajustes
+│   │       ├── HomeCoordinator.swift # Fluxo da home e abertura dos Ajustes
+│   │       ├── HomeStrings.swift    # Chaves de strings da home
+│   │       └── Home.xcstrings       # Catálogo de strings da home
 │   ├── Info.plist                   # Gerado pelo XcodeGen a partir de project.yml
 │   └── Assets.xcassets/
 ├── PocSandbox.xcodeproj             # Gerado — não editar
@@ -228,8 +245,10 @@ Convenção do projeto: telas e features seguem **MVVM-C** — Views declarativa
 - **`LoginViewModel`** — expõe estado de login/erro e delega a autenticação ao `AuthService`.
 - **`LoginView`** — tela declarativa de login com o botão do Google.
 - **`HomeCoordinator`** — cria o `HomeViewModel` e concentra navegação, como abrir os Ajustes do sistema.
-- **`HomeViewModel`** — mantém carrinhos, permissão/localização, mercados, filtro por nome e logout; também formata datas, distâncias e moeda.
-- **`HomeView`** — home declarativa com tipografia nativa e controles de toque recomendados, header, carrinhos (com exclusão, limite de 2 e expansão do bloco “Ver mais” sobrepondo o conteúdo abaixo), pergunta, campo de busca e mercados próximos.
+- **`HomeViewModel`** — mantém carrinhos, permissão/localização, mercados, filtro por nome e logout; também formata distâncias.
+- **`HomeView`** — home declarativa com tipografia nativa e controles de toque recomendados, header, carrinhos (componente `ExpandableListView`), pergunta, campo de busca e mercados próximos.
+- **`ExpandableListView`** — componente genérico de lista expansível no design system (`Core/DesignSystem`), com título parametrizável, altura adaptável ao conteúdo no modo retraído, limitação a 1 elemento mais metade do segundo elemento quando há mais de 1 item, efeito gradiente com fade (transparência) no segundo elemento em direção ao bottom quando retraído, expansão sobre o conteúdo com botão “Fechar” (sem aplicar o efeito de fade no rodapé expandido) e suporte a conteúdo customizado via ViewBuilder ou itens que seguem `CartListItem`. Mantém `typealias CartsListView` para compatibilidade.
+- **`CartListItem`** — protocolo com as informações visíveis de um carrinho (mercado, data de início, status e total) e formatação padrão de data e moeda; `Cart` é o modelo que o implementa.
 - **`Theme` / `CardStyle`** — cores semânticas nativas (claro/escuro), `Color.accentColor` e cards do layout.
 - **`LocationProvider`** — classe `@MainActor` que encapsula o `CLLocationManager`, publica o status de autorização e a localização atual.
 - **`MapKitMarketService`** — busca supermercados próximos com `MKLocalSearch`, filtra pelo raio, remove duplicatas e converte os resultados em `Market`.
@@ -247,6 +266,41 @@ PocSandboxApp -> AppRootView -> AppCoordinator.start()
                                         └── HomeCoordinator -> HomeViewModel
                                               ├── LocationProvider -> MapKit -> mercados
                                               └── CartStore -> carrinhos
+```
+
+## Strings e localização
+
+Nunca coloque textos diretamente no código. As strings são organizadas por domínio/feature em catálogos `.xcstrings` (`Home.xcstrings`, `Login.xcstrings`, `Carts.xcstrings`, `Location.xcstrings`, etc.) com idioma-fonte `pt-BR` e acessadas por enums que conformam ao protocolo [`LocalizableStrings`](PocSandbox/Core/Localization/LocalizableStrings.swift).
+
+### Padrão de uso em Views (SwiftUI)
+
+Em componentes SwiftUI que aceitam `LocalizedStringResource` nativamente (como `Text`, `Button`, `Label`, `accessibilityLabel`, `accessibilityHint` e `confirmationDialog`), utilize a propriedade `.localized`:
+
+```swift
+Text(Home.headerBadge.localized)
+Text(Login.welcomeTitle.localized)
+Button(Home.signOutConfirm.localized, role: .destructive)
+Label(Home.menuSignOut.localized, systemImage: "rectangle.portrait.and.arrow.right")
+ProgressView(AppStrings.restoringSession.localized)
+.accessibilityLabel(Text(Home.accountAccessibilityLabel.localized))
+.accessibilityHint(Text(Home.locationPermissionAccessibilityHint.localized))
+```
+
+### Padrão de uso em ViewModels, Serviços e APIs de String
+
+Para contextos que exigem `String` pura (como mensagens de erro em ViewModels, serviços ou `TextField` no iOS 17), utilize `.text`:
+
+```swift
+errorMessage = Auth.errorMissingClientID.text
+TextField(Home.searchPlaceholder.text, text: $viewModel.searchText)
+```
+
+E para strings com argumentos formatados, utilize `localized(with:)`:
+
+```swift
+Home.marketsEmptySearch.localized(with: searchText)
+Carts.rowSubtitle.localized(with: item.startedAtText, item.statusText)
+Carts.deleteAccessibilityLabel.localized(with: item.marketName)
 ```
 
 ## Solução de problemas

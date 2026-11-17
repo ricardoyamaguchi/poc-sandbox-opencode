@@ -1,0 +1,36 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "auth.defaultUserName" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuário"
+          }
+        }
+      }
+    },
+    "auth.error.missingClientID" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure o GIDClientID em PocSandbox/Info.plist com o Client ID OAuth do Google."
+          }
+        }
+      }
+    },
+    "auth.error.presenter" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível abrir a tela de login do Google."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

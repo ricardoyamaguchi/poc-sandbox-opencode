@@ -43,7 +43,7 @@ final class LocationProvider: NSObject, ObservableObject {
         timeoutTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(10))
             guard !Task.isCancelled, let self else { return }
-            self.finishRequest(with: "Não foi possível obter sua localização. Tente novamente.")
+            self.finishRequest(with: Location.errorTimeout.text)
         }
     }
 
@@ -96,16 +96,16 @@ extension LocationProvider: CLLocationManagerDelegate {
         let nsError = error as NSError
         guard nsError.domain == kCLErrorDomain,
               let code = CLError.Code(rawValue: nsError.code) else {
-            return "Não foi possível obter sua localização."
+            return Location.errorGeneric.text
         }
 
         switch code {
         case .denied:
-            return "O acesso à localização foi negado."
+            return Location.errorDenied.text
         case .network:
-            return "Não foi possível obter sua localização. Verifique sua conexão e tente novamente."
+            return Location.errorNetwork.text
         default:
-            return "Não foi possível obter sua localização. Tente novamente."
+            return Location.errorTimeout.text
         }
     }
 }

@@ -15,7 +15,7 @@ final class AuthService: ObservableObject {
     var isConfigured: Bool { !clientID.isEmpty && !clientID.contains("placeholder") }
 
     var displayName: String {
-        user?.profile?.name ?? "Usuário"
+        user?.profile?.name ?? Auth.defaultUserName.text
     }
 
     var email: String? {
@@ -50,12 +50,12 @@ final class AuthService: ObservableObject {
         guard !isSigningIn else { return }
 
         guard isConfigured else {
-            errorMessage = "Configure o GIDClientID em PocSandbox/Info.plist com o Client ID OAuth do Google."
+            errorMessage = Auth.errorMissingClientID.text
             return
         }
 
         guard let presenter = Self.presentingViewController() else {
-            errorMessage = "Não foi possível abrir a tela de login do Google."
+            errorMessage = Auth.errorPresenter.text
             return
         }
 

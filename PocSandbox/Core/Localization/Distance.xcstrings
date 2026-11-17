@@ -1,0 +1,26 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "distance.meters" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d m"
+          }
+        }
+      }
+    },
+    "distance.kilometers" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.1f km"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

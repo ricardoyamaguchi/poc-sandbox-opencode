@@ -7,7 +7,6 @@ struct HomeView: View {
     @ObservedObject var coordinator: HomeCoordinator
     @State private var isCartsExpanded = false
     @State private var collapsedCartsHeight: CGFloat = 0
-    @State private var collapsedListHeight: CGFloat = 0
 
     private let horizontalPadding: CGFloat = 16
     private let cartsBorderInset: CGFloat = 8
@@ -38,23 +37,32 @@ struct HomeView: View {
                         .scrollDismissesKeyboard(.interactively)
                         .refreshable { await viewModel.refreshMarkets() }
 
-                        cartsBlock(height: isCartsExpanded ? expandedHeight : nil)
-                            .frame(maxWidth: .infinity, alignment: .topLeading)
-                            .padding(.horizontal, cartsBorderInset)
-                            .offset(y: isCartsExpanded ? 0 : -cartsBorderInset)
-                            .zIndex(isCartsExpanded ? 1 : 0)
+                        ExpandableListView(
+                            title: Home.cartsTitle.localized,
+                            items: viewModel.openCarts,
+                            height: isCartsExpanded ? expandedHeight : nil,
+                            isExpanded: $isCartsExpanded,
+                            collapsedHeight: $collapsedCartsHeight,
+                            onDelete: { cart in
+                                viewModel.closeCart(cart)
+                            }
+                        )
+                        .frame(maxWidth: .infinity, alignment: .topLeading)
+                        .padding(.horizontal, cartsBorderInset)
+                        .offset(y: isCartsExpanded ? 0 : -cartsBorderInset)
+                        .zIndex(isCartsExpanded ? 1 : 0)
                     }
                 }
             }
             .background(Theme.background.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
             .confirmationDialog(
-                "Deseja sair da sua conta Google?",
+                Home.signOutTitle.localized,
                 isPresented: $viewModel.showSignOutConfirmation,
                 titleVisibility: .visible
             ) {
-                Button("Sair", role: .destructive) { viewModel.signOut() }
-                Button("Cancelar", role: .cancel) { viewModel.cancelSignOut() }
+                Button(Home.signOutConfirm.localized, role: .destructive) { viewModel.signOut() }
+                Button(Home.signOutCancel.localized, role: .cancel) { viewModel.cancelSignOut() }
             }
             .onAppear { viewModel.onAppear() }
             .onChange(of: scenePhase) { _, phase in
@@ -62,14 +70,14 @@ struct HomeView: View {
                 viewModel.onScenePhaseActive()
             }
             .onChange(of: viewModel.openCarts.count) { _, count in
-                if count <= 2 { isCartsExpanded = false }
+                if count <= 1 { isCartsExpanded = false }
             }
         }
     }
 
     private var header: some View {
         HStack {
-            Text("CARRINHO")
+            Text(Home.headerBadge.localized)
                 .font(.caption.weight(.bold))
                 .tracking(1.5)
                 .foregroundStyle(Theme.brand)
@@ -84,7 +92,7 @@ struct HomeView: View {
                 Button(role: .destructive) {
                     viewModel.requestSignOut()
                 } label: {
-                    Label("Sair da conta", systemImage: "rectangle.portrait.and.arrow.right")
+                    Label(Home.menuSignOut.localized, systemImage: "rectangle.portrait.and.arrow.right")
                 }
             } label: {
                 Image(systemName: "cart")
@@ -93,149 +101,19 @@ struct HomeView: View {
                     .frame(minWidth: 44, minHeight: 44)
                     .contentShape(Rectangle())
             }
-            .accessibilityLabel("Conta")
+            .accessibilityLabel(Text(Home.accountAccessibilityLabel.localized))
         }
-    }
-
-    private func cartsBlock(height: CGFloat?) -> some View {
-        let carts = isCartsExpanded ? viewModel.openCarts : Array(viewModel.openCarts.prefix(2))
-
-        return VStack(alignment: .leading, spacing: 14) {
-            Text("Seus carrinhos")
-                .font(.headline)
-                .foregroundStyle(Theme.ink)
-
-            if viewModel.openCarts.isEmpty {
-                emptyCartsCard
-            } else {
-                ScrollView {
-                    VStack(spacing: 12) {
-                        ForEach(carts) { cart in
-                            cartRow(cart)
-                        }
-
-                        if viewModel.openCarts.count > 2 && !isCartsExpanded {
-                            seeMoreChip
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                    }
-                    .padding(.bottom, isCartsExpanded ? 8 : 0)
-                    .background(
-                        GeometryReader { proxy in
-                            Color.clear.onAppear {
-                                if !isCartsExpanded { collapsedListHeight = proxy.size.height }
-                            }
-                            .onChange(of: proxy.size.height) { _, newHeight in
-                                if !isCartsExpanded { collapsedListHeight = newHeight }
-                            }
-                        }
-                    )
-                }
-                .scrollDisabled(!isCartsExpanded)
-                .scrollIndicators(isCartsExpanded ? .visible : .hidden)
-                .frame(maxHeight: isCartsExpanded ? .infinity : (collapsedListHeight > 0 ? collapsedListHeight : nil))
-
-                if isCartsExpanded {
-                    Button {
-                        withAnimation(.snappy) {
-                            isCartsExpanded = false
-                        }
-                    } label: {
-                        Text("Fechar")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Theme.brand)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(Theme.card)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(Theme.brand.opacity(0.25), lineWidth: 1))
-                    }
-                    .buttonStyle(.plain)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .frame(minHeight: 44)
-                    .accessibilityLabel("Fechar lista de carrinhos")
-                    .padding(.bottom, 8)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: isCartsExpanded ? .infinity : nil, alignment: .topLeading)
-        .background(
-            GeometryReader { proxy in
-                Color.clear.onAppear {
-                    if !isCartsExpanded {
-                        collapsedCartsHeight = proxy.size.height
-                    }
-                }
-                .onChange(of: proxy.size.height) { _, newHeight in
-                    if !isCartsExpanded {
-                        collapsedCartsHeight = newHeight
-                    }
-                }
-            }
-        )
-        .padding(.horizontal, cartsBorderInset)
-        .padding(.vertical, cartsBorderInset)
-        .frame(height: height, alignment: .top)
-        .background(Theme.background)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(Color(uiColor: .separator).opacity(0.6), lineWidth: 0.5)
-        }
-    }
-
-    private var seeMoreChip: some View {
-        Button {
-            withAnimation(.snappy) {
-                isCartsExpanded = true
-            }
-        } label: {
-            Text("Ver mais")
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(Theme.brand)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(Theme.card)
-                .clipShape(Capsule())
-                .overlay(Capsule().stroke(Theme.brand.opacity(0.25), lineWidth: 1))
-        }
-        .buttonStyle(.plain)
-        .frame(minHeight: 44)
-        .accessibilityHint("Exibe todos os carrinhos em aberto")
-    }
-
-    private var emptyCartsCard: some View {
-        HStack(spacing: 14) {
-            Image(systemName: "cart")
-                .font(.title3)
-                .foregroundStyle(Theme.ink)
-                .frame(width: 34, height: 34)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Nenhum carrinho em aberto.")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Theme.ink)
-
-                Text("Toque em um mercado para começar.")
-                    .font(.caption)
-                    .foregroundStyle(Theme.muted)
-            }
-
-            Spacer()
-        }
-        .padding(12)
-        .cardStyle()
     }
 
     private var questionSection: some View {
-        Text("Onde você está comprando?")
+        Text(Home.questionTitle.localized)
             .font(.title2.weight(.bold))
             .foregroundStyle(Theme.ink)
     }
 
     private var marketsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Mercados perto de você")
+            Text(Home.marketsTitle.localized)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(Theme.muted)
 
@@ -251,7 +129,7 @@ struct HomeView: View {
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Theme.muted)
 
-            TextField("Digite o nome do mercado", text: $viewModel.searchText)
+            TextField(Home.searchPlaceholder.text, text: $viewModel.searchText)
                 .font(.body)
                 .foregroundStyle(Theme.ink)
                 .textInputAutocapitalization(.words)
@@ -267,7 +145,7 @@ struct HomeView: View {
                         .foregroundStyle(Theme.muted)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Limpar busca")
+                .accessibilityLabel(Text(Home.searchClearAccessibilityLabel.localized))
             }
         }
         .padding(.horizontal, 14)
@@ -280,20 +158,22 @@ struct HomeView: View {
         if viewModel.isDenied {
             permissionCard
         } else if viewModel.authorizationStatus == .notDetermined {
-            statusCard("Solicitando acesso à localização…")
+            statusCard(Home.locationRequesting.text)
         } else if viewModel.isLoadingMarkets {
-            statusCard("Buscando mercados próximos…")
+            statusCard(Home.marketsLoading.text)
         } else if let locationError = viewModel.locationErrorMessage,
                   viewModel.location == nil {
             locationErrorCard(locationError)
         } else if viewModel.location == nil {
-            statusCard("Obtendo sua localização…")
+            statusCard(Home.locationLoading.text)
         } else if let marketsError = viewModel.marketsError {
             statusCard(marketsError)
         } else if viewModel.markets.isEmpty {
-            statusCard("Nenhum mercado encontrado por perto.")
+            statusCard(Home.marketsEmpty.text)
         } else if viewModel.filteredMarkets.isEmpty {
-            statusCard("Nenhum mercado encontrado para \"\(viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines))\".")
+            statusCard(Home.marketsEmptySearch.localized(with:
+                viewModel.searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+            ))
         } else {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.filteredMarkets) { market in
@@ -305,7 +185,7 @@ struct HomeView: View {
 
     private var permissionCard: some View {
         Button(action: coordinator.openSettings) {
-            Text("Permita o acesso à localização para ver mercados próximos.")
+            Text(Home.locationPermission.localized)
                 .font(.footnote)
                 .foregroundStyle(Theme.ink)
                 .multilineTextAlignment(.leading)
@@ -315,51 +195,7 @@ struct HomeView: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Abre os Ajustes para permitir a localização")
-    }
-
-    private func cartRow(_ cart: Cart) -> some View {
-        HStack(spacing: 14) {
-            Image(systemName: "cart")
-                .font(.title3)
-                .foregroundStyle(Theme.ink)
-                .frame(width: 34, height: 34)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(cart.marketName)
-                    .font(.body.weight(.semibold))
-                    .foregroundStyle(Theme.ink)
-                    .lineLimit(1)
-
-                Text("\(viewModel.dateText(cart.startedAt)) • em andamento")
-                    .font(.footnote)
-                    .foregroundStyle(Theme.muted)
-                    .lineLimit(1)
-            }
-
-            Spacer(minLength: 8)
-
-            Text(viewModel.currencyText(cart.total))
-                .font(.body.weight(.semibold))
-                .foregroundStyle(Theme.ink)
-                .lineLimit(1)
-
-            Button {
-                withAnimation(.snappy) {
-                    viewModel.closeCart(cart)
-                }
-            } label: {
-                Image(systemName: "trash")
-                    .font(.body)
-                    .foregroundStyle(.red)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Excluir carrinho de \(cart.marketName)")
-        }
-        .padding(12)
-        .cardStyle()
+        .accessibilityHint(Text(Home.locationPermissionAccessibilityHint.localized))
     }
 
     private func marketRow(_ market: Market) -> some View {
@@ -406,7 +242,7 @@ struct HomeView: View {
             .cardStyle()
         }
         .buttonStyle(.plain)
-        .accessibilityHint(isOpen ? "Carrinho já está em aberto" : "Inicia uma nova compra neste mercado")
+        .accessibilityHint(Text(isOpen ? Home.marketOpenCartAccessibilityHint.localized : Home.marketStartCartAccessibilityHint.localized))
     }
 
     private func statusCard(_ message: String) -> some View {
@@ -436,7 +272,7 @@ struct HomeView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityHint("Tenta obter sua localização novamente")
+        .accessibilityHint(Text(Home.locationRetryAccessibilityHint.localized))
     }
 }
 

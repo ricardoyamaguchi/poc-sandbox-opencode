@@ -1,0 +1,216 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "home.header.badge" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CARRINHO"
+          }
+        }
+      }
+    },
+    "home.menu.signOut" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair da conta"
+          }
+        }
+      }
+    },
+    "home.account.accessibilityLabel" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta"
+          }
+        }
+      }
+    },
+    "home.question.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Onde você está comprando?"
+          }
+        }
+      }
+    },
+    "home.carts.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seus carrinhos"
+          }
+        }
+      }
+    },
+    "home.markets.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mercados perto de você"
+          }
+        }
+      }
+    },
+    "home.markets.loading" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buscando mercados próximos…"
+          }
+        }
+      }
+    },
+    "home.markets.empty" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum mercado encontrado por perto."
+          }
+        }
+      }
+    },
+    "home.markets.emptySearch" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum mercado encontrado para \"%@\"."
+          }
+        }
+      }
+    },
+    "home.search.placeholder" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Digite o nome do mercado"
+          }
+        }
+      }
+    },
+    "home.search.clear.accessibilityLabel" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar busca"
+          }
+        }
+      }
+    },
+    "home.location.requesting" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solicitando acesso à localização…"
+          }
+        }
+      }
+    },
+    "home.location.loading" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Obtendo sua localização…"
+          }
+        }
+      }
+    },
+    "home.location.permission" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permita o acesso à localização para ver mercados próximos."
+          }
+        }
+      }
+    },
+    "home.location.permission.accessibilityHint" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre os Ajustes para permitir a localização"
+          }
+        }
+      }
+    },
+    "home.location.retry.accessibilityHint" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tenta obter sua localização novamente"
+          }
+        }
+      }
+    },
+    "home.market.openCart.accessibilityHint" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carrinho já está em aberto"
+          }
+        }
+      }
+    },
+    "home.market.startCart.accessibilityHint" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia uma nova compra neste mercado"
+          }
+        }
+      }
+    },
+    "home.signOut.title" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deseja sair da sua conta Google?"
+          }
+        }
+      }
+    },
+    "home.signOut.confirm" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sair"
+          }
+        }
+      }
+    },
+    "home.signOut.cancel" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelar"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

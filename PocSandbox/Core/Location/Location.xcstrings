@@ -1,0 +1,46 @@
+{
+  "sourceLanguage" : "pt-BR",
+  "strings" : {
+    "location.error.timeout" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível obter sua localização. Tente novamente."
+          }
+        }
+      }
+    },
+    "location.error.generic" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível obter sua localização."
+          }
+        }
+      }
+    },
+    "location.error.denied" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O acesso à localização foi negado."
+          }
+        }
+      }
+    },
+    "location.error.network" : {
+      "localizations" : {
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível obter sua localização. Verifique sua conexão e tente novamente."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

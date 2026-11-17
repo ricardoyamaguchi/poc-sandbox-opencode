@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-struct Cart: Identifiable, Codable, Hashable {
+struct Cart: Codable, Hashable, CartListItem {
     let id: UUID
     let marketID: String
     let marketName: String
