@@ -17,7 +17,9 @@ struct LoginView: View {
 
                 VStack(spacing: 20) {
                     Image(systemName: "swift")
-                        .font(.system(size: 52, weight: .semibold))
+                        .font(.largeTitle.weight(.semibold))
+                        .imageScale(.large)
+                        .symbolRenderingMode(.monochrome)
                         .foregroundStyle(.white)
                         .frame(width: 104, height: 104)
                         .background(
@@ -98,7 +100,8 @@ struct LoginView: View {
 private struct GoogleLogo: View {
     var body: some View {
         Text("G")
-            .font(.system(size: 20, weight: .bold, design: .rounded))
+            .font(.title3.weight(.bold))
+            .fontDesign(.rounded)
             .foregroundStyle(
                 LinearGradient(
                     colors: [.blue, .red, .yellow, .green],

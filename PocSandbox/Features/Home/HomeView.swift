@@ -5,8 +5,12 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var viewModel: HomeViewModel
     @ObservedObject var coordinator: HomeCoordinator
+    @State private var isCartsExpanded = false
+    @State private var collapsedCartsHeight: CGFloat = 0
+    @State private var collapsedListHeight: CGFloat = 0
 
     private let horizontalPadding: CGFloat = 16
+    private let cartsBorderInset: CGFloat = 8
 
     var body: some View {
         NavigationStack {
@@ -16,18 +20,31 @@ struct HomeView: View {
                     .padding(.top, 10)
                     .padding(.bottom, 18)
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 28) {
-                        cartsSection
-                        questionSection
-                        marketsSection
+                GeometryReader { proxy in
+                    let expandedHeight = max(collapsedCartsHeight, proxy.size.height)
+
+                    ZStack(alignment: .topLeading) {
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 28) {
+                                Color.clear
+                                    .frame(height: collapsedCartsHeight)
+                                questionSection
+                                marketsSection
+                            }
+                            .padding(.horizontal, horizontalPadding)
+                            .padding(.bottom, 24)
+                        }
+                        .scrollIndicators(.hidden)
+                        .scrollDismissesKeyboard(.interactively)
+                        .refreshable { await viewModel.refreshMarkets() }
+
+                        cartsBlock(height: isCartsExpanded ? expandedHeight : nil)
+                            .frame(maxWidth: .infinity, alignment: .topLeading)
+                            .padding(.horizontal, cartsBorderInset)
+                            .offset(y: isCartsExpanded ? 0 : -cartsBorderInset)
+                            .zIndex(isCartsExpanded ? 1 : 0)
                     }
-                    .padding(.horizontal, horizontalPadding)
-                    .padding(.bottom, 24)
                 }
-                .scrollIndicators(.hidden)
-                .scrollDismissesKeyboard(.interactively)
-                .refreshable { await viewModel.refreshMarkets() }
             }
             .background(Theme.background.ignoresSafeArea())
             .toolbar(.hidden, for: .navigationBar)
@@ -44,13 +61,16 @@ struct HomeView: View {
                 guard phase == .active else { return }
                 viewModel.onScenePhaseActive()
             }
+            .onChange(of: viewModel.openCarts.count) { _, count in
+                if count <= 2 { isCartsExpanded = false }
+            }
         }
     }
 
     private var header: some View {
         HStack {
             Text("CARRINHO")
-                .font(.system(size: 12, weight: .bold))
+                .font(.caption.weight(.bold))
                 .tracking(1.5)
                 .foregroundStyle(Theme.brand)
 
@@ -68,45 +88,136 @@ struct HomeView: View {
                 }
             } label: {
                 Image(systemName: "cart")
-                    .font(.system(size: 24, weight: .semibold))
+                    .font(.title3.weight(.semibold))
                     .foregroundStyle(Theme.ink)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
             }
             .accessibilityLabel("Conta")
         }
     }
 
-    private var cartsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+    private func cartsBlock(height: CGFloat?) -> some View {
+        let carts = isCartsExpanded ? viewModel.openCarts : Array(viewModel.openCarts.prefix(2))
+
+        return VStack(alignment: .leading, spacing: 14) {
             Text("Seus carrinhos")
-                .font(.system(size: 16, weight: .bold))
+                .font(.headline)
                 .foregroundStyle(Theme.ink)
 
             if viewModel.openCarts.isEmpty {
                 emptyCartsCard
             } else {
-                VStack(spacing: 12) {
-                    ForEach(viewModel.openCarts) { cart in
-                        cartRow(cart)
+                ScrollView {
+                    VStack(spacing: 12) {
+                        ForEach(carts) { cart in
+                            cartRow(cart)
+                        }
+
+                        if viewModel.openCarts.count > 2 && !isCartsExpanded {
+                            seeMoreChip
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
                     }
+                    .padding(.bottom, isCartsExpanded ? 8 : 0)
+                    .background(
+                        GeometryReader { proxy in
+                            Color.clear.onAppear {
+                                if !isCartsExpanded { collapsedListHeight = proxy.size.height }
+                            }
+                            .onChange(of: proxy.size.height) { _, newHeight in
+                                if !isCartsExpanded { collapsedListHeight = newHeight }
+                            }
+                        }
+                    )
+                }
+                .scrollDisabled(!isCartsExpanded)
+                .scrollIndicators(isCartsExpanded ? .visible : .hidden)
+                .frame(maxHeight: isCartsExpanded ? .infinity : (collapsedListHeight > 0 ? collapsedListHeight : nil))
+
+                if isCartsExpanded {
+                    Button {
+                        withAnimation(.snappy) {
+                            isCartsExpanded = false
+                        }
+                    } label: {
+                        Text("Fechar")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Theme.brand)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Theme.card)
+                            .clipShape(Capsule())
+                            .overlay(Capsule().stroke(Theme.brand.opacity(0.25), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .frame(minHeight: 44)
+                    .accessibilityLabel("Fechar lista de carrinhos")
+                    .padding(.bottom, 8)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: isCartsExpanded ? .infinity : nil, alignment: .topLeading)
+        .background(
+            GeometryReader { proxy in
+                Color.clear.onAppear {
+                    if !isCartsExpanded {
+                        collapsedCartsHeight = proxy.size.height
+                    }
+                }
+                .onChange(of: proxy.size.height) { _, newHeight in
+                    if !isCartsExpanded {
+                        collapsedCartsHeight = newHeight
+                    }
+                }
+            }
+        )
+        .padding(.horizontal, cartsBorderInset)
+        .padding(.vertical, cartsBorderInset)
+        .frame(height: height, alignment: .top)
+        .background(Theme.background)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color(uiColor: .separator).opacity(0.6), lineWidth: 0.5)
+        }
+    }
+
+    private var seeMoreChip: some View {
+        Button {
+            withAnimation(.snappy) {
+                isCartsExpanded = true
+            }
+        } label: {
+            Text("Ver mais")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Theme.brand)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Theme.card)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(Theme.brand.opacity(0.25), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+        .frame(minHeight: 44)
+        .accessibilityHint("Exibe todos os carrinhos em aberto")
     }
 
     private var emptyCartsCard: some View {
         HStack(spacing: 14) {
             Image(systemName: "cart")
-                .font(.system(size: 22))
+                .font(.title3)
                 .foregroundStyle(Theme.ink)
                 .frame(width: 34, height: 34)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text("Nenhum carrinho em aberto.")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Theme.ink)
 
                 Text("Toque em um mercado para começar.")
-                    .font(.system(size: 11))
+                    .font(.caption)
                     .foregroundStyle(Theme.muted)
             }
 
@@ -118,16 +229,14 @@ struct HomeView: View {
 
     private var questionSection: some View {
         Text("Onde você está comprando?")
-            .font(.system(size: 27, weight: .bold))
+            .font(.title2.weight(.bold))
             .foregroundStyle(Theme.ink)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
     }
 
     private var marketsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Mercados perto de você")
-                .font(.system(size: 14, weight: .medium))
+                .font(.subheadline.weight(.medium))
                 .foregroundStyle(Theme.muted)
 
             searchField
@@ -139,11 +248,11 @@ struct HomeView: View {
     private var searchField: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(Theme.muted)
 
             TextField("Digite o nome do mercado", text: $viewModel.searchText)
-                .font(.system(size: 14))
+                .font(.body)
                 .foregroundStyle(Theme.ink)
                 .textInputAutocapitalization(.words)
                 .autocorrectionDisabled()
@@ -154,7 +263,7 @@ struct HomeView: View {
                     viewModel.searchText = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
+                        .font(.subheadline)
                         .foregroundStyle(Theme.muted)
                 }
                 .buttonStyle(.plain)
@@ -197,9 +306,9 @@ struct HomeView: View {
     private var permissionCard: some View {
         Button(action: coordinator.openSettings) {
             Text("Permita o acesso à localização para ver mercados próximos.")
-                .font(.system(size: 12.5))
+                .font(.footnote)
                 .foregroundStyle(Theme.ink)
-                .lineSpacing(3)
+                .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
                 .mutedCardStyle()
@@ -212,18 +321,18 @@ struct HomeView: View {
     private func cartRow(_ cart: Cart) -> some View {
         HStack(spacing: 14) {
             Image(systemName: "cart")
-                .font(.system(size: 26))
+                .font(.title3)
                 .foregroundStyle(Theme.ink)
                 .frame(width: 34, height: 34)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(cart.marketName)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(Theme.ink)
                     .lineLimit(1)
 
                 Text("\(viewModel.dateText(cart.startedAt)) • em andamento")
-                    .font(.system(size: 11))
+                    .font(.footnote)
                     .foregroundStyle(Theme.muted)
                     .lineLimit(1)
             }
@@ -231,22 +340,26 @@ struct HomeView: View {
             Spacer(minLength: 8)
 
             Text(viewModel.currencyText(cart.total))
-                .font(.system(size: 16, weight: .semibold))
+                .font(.body.weight(.semibold))
                 .foregroundStyle(Theme.ink)
                 .lineLimit(1)
-        }
-        .padding(12)
-        .cardStyle()
-        .contentShape(Rectangle())
-        .contextMenu {
-            Button(role: .destructive) {
+
+            Button {
                 withAnimation(.snappy) {
                     viewModel.closeCart(cart)
                 }
             } label: {
-                Label("Encerrar carrinho", systemImage: "xmark.circle")
+                Image(systemName: "trash")
+                    .font(.body)
+                    .foregroundStyle(.red)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Excluir carrinho de \(cart.marketName)")
         }
+        .padding(12)
+        .cardStyle()
     }
 
     private func marketRow(_ market: Market) -> some View {
@@ -259,26 +372,26 @@ struct HomeView: View {
         } label: {
             HStack(spacing: 14) {
                 Image(systemName: "storefront")
-                    .font(.system(size: 22))
+                    .font(.title3)
                     .foregroundStyle(Theme.ink)
                     .frame(width: 34, height: 34)
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(market.name)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.body.weight(.semibold))
                         .foregroundStyle(Theme.ink)
                         .lineLimit(1)
 
                     if !market.address.isEmpty {
                         Text(market.address)
-                            .font(.system(size: 11))
+                            .font(.footnote)
                             .foregroundStyle(Theme.muted)
                             .lineLimit(2)
                     }
 
                     if let distance = viewModel.distanceText(for: market) {
                         Text(distance)
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.footnote.weight(.semibold))
                             .foregroundStyle(Theme.brand)
                     }
                 }
@@ -286,7 +399,7 @@ struct HomeView: View {
                 Spacer(minLength: 8)
 
                 Image(systemName: isOpen ? "checkmark.circle.fill" : "plus.circle.fill")
-                    .font(.system(size: 20))
+                    .font(.title3)
                     .foregroundStyle(isOpen ? Theme.muted : Theme.brand)
             }
             .padding(12)
@@ -298,7 +411,7 @@ struct HomeView: View {
 
     private func statusCard(_ message: String) -> some View {
         Text(message)
-            .font(.system(size: 14))
+            .font(.callout)
             .foregroundStyle(Theme.muted)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(16)
@@ -309,13 +422,13 @@ struct HomeView: View {
         Button(action: viewModel.retryLocation) {
             HStack(spacing: 12) {
                 Text(message)
-                    .font(.system(size: 14))
+                    .font(.callout)
                     .foregroundStyle(Theme.ink)
                     .multilineTextAlignment(.leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Image(systemName: "arrow.clockwise")
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(Theme.brand)
             }
             .padding(16)

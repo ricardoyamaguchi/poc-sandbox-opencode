@@ -23,7 +23,7 @@ O PocSandbox permite iniciar e acompanhar compras em mercados físicos:
 
 1. O app inicia verificando se há uma sessão salva.
 2. Sem sessão, exibe a tela de login com o botão **Continuar com Google**.
-3. Após a autenticação, a tela inicial mostra, no topo, os carrinhos em aberto, pergunta **Onde você está comprando?** e lista os **Mercados perto de você**, com um campo para filtrar pelo nome parcial do mercado.
+3. Após a autenticação, a tela inicial mostra, no topo, os carrinhos em aberto (até 2 visíveis, sem rolagem, com exclusão por ícone de lixeira e chip **Ver mais** centralizado que expande o próprio bloco com animação até a borda inferior da tela, sobrepondo o conteúdo abaixo, com rolagem e botão **Fechar** fixo no rodapé), pergunta **Onde você está comprando?** e lista os **Mercados perto de você**, com um campo para filtrar pelo nome parcial do mercado.
 4. A lista de mercados é obtida pela localização do aparelho usando o **MapKit** (`MKLocalSearch`).
 5. Ao tocar em um mercado, um carrinho é aberto e passa a aparecer no topo da tela. Os carrinhos ficam salvos localmente entre execuções.
 
@@ -37,9 +37,9 @@ O projeto serve como base para experimentos (`sandbox`) e não possui testes, CI
 - Permissão de localização solicitada ao abrir a home; mensagem e atalho para Ajustes quando negada.
 - Busca de mercados por geolocalização com o **MapKit** (`MKLocalSearch`), sem chave de API.
 - Campo de busca que filtra os mercados próximos pelo nome parcial, ignorando maiúsculas e acentos.
-- Carrinhos abertos com total e status, persistidos em `UserDefaults` (`CartStore`).
+- Carrinhos abertos com total e status, persistidos em `UserDefaults` (`CartStore`), exibindo até 2 na home com rolagem desabilitada; quando há mais, o chip **Ver mais** (centralizado) expande o próprio bloco até a borda inferior sobrepondo o conteúdo abaixo com animação, rolagem habilitada e botão **Fechar** centralizado no rodapé, retornando ao formato original. Cada carrinho pode ser excluído pelo ícone de lixeira.
 - Tema nativo adaptável ao modo claro/escuro do device, usando cores semânticas do sistema e `Color.accentColor` (asset `AccentColor`).
-- Home com header verde, cards arredondados e card cinza para o aviso de localização.
+- Home com tipografia nativa do iOS (text styles/Dynamic Type), header verde, cards arredondados, lista de carrinhos delimitada por borda fina e suave afastada 8pt do conteúdo, e card cinza para o aviso de localização.
 - Logout pelo menu de conta no ícone de carrinho do header.
 - Sessão gerenciada por `AuthService` (`ObservableObject` + `async/await`).
 
@@ -229,7 +229,7 @@ Convenção do projeto: telas e features seguem **MVVM-C** — Views declarativa
 - **`LoginView`** — tela declarativa de login com o botão do Google.
 - **`HomeCoordinator`** — cria o `HomeViewModel` e concentra navegação, como abrir os Ajustes do sistema.
 - **`HomeViewModel`** — mantém carrinhos, permissão/localização, mercados, filtro por nome e logout; também formata datas, distâncias e moeda.
-- **`HomeView`** — home declarativa com header, carrinhos, pergunta, campo de busca e mercados próximos.
+- **`HomeView`** — home declarativa com tipografia nativa e controles de toque recomendados, header, carrinhos (com exclusão, limite de 2 e expansão do bloco “Ver mais” sobrepondo o conteúdo abaixo), pergunta, campo de busca e mercados próximos.
 - **`Theme` / `CardStyle`** — cores semânticas nativas (claro/escuro), `Color.accentColor` e cards do layout.
 - **`LocationProvider`** — classe `@MainActor` que encapsula o `CLLocationManager`, publica o status de autorização e a localização atual.
 - **`MapKitMarketService`** — busca supermercados próximos com `MKLocalSearch`, filtra pelo raio, remove duplicatas e converte os resultados em `Market`.
